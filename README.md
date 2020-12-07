@@ -65,4 +65,4 @@ I put this stack together about a year ago and haven't been able to push much fu
 
 Ideally it could be deployed in Docker (I don't know anything about Docker or Kubernetes).  The nginx and Django stuff seems like it could be pretty easy to containerize.
 
-Help me package this up!  We more federated live-streaming platforms!  It just always be Twitch.tv, YouTube, and Facebook!
+Help me package this up!  We need more federated live-streaming platforms!  It can't just always be Twitch.tv, YouTube, and Facebook!
