@@ -3,7 +3,7 @@ Self-hosted Live Video Streaming Website + Backend
 
 Reference website: [https://boltstream.me](https://boltstream.me)
 
-The is the end result of a series of blog posts that I made [here](https://benwilber.github.io/nginx/rtmp/live/video/streaming/2018/03/25/building-a-live-video-streaming-website-part-1-start-streaming.html)
+This is the result of a series of blog posts that I made [here](https://benwilber.github.io/nginx/rtmp/live/video/streaming/2018/03/25/building-a-live-video-streaming-website-part-1-start-streaming.html)
 
 ## Features
 
