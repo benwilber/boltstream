@@ -1,0 +1,21 @@
+---
+- name: restart nginx server
+  systemd:
+    name: nginx
+    state: restarted
+    daemon_reload: yes
+
+- name: restart nginx-rtmp server
+  systemd:
+    name: nginx-rtmp
+    state: restarted
+    daemon_reload: yes
+
+- name: restart nginx-nchan server
+  systemd:
+    name: nginx-nchan
+    state: restarted
+    daemon_reload: yes
+
+- name: install boltstream selinux policy
+  command: semodule -i /tmp/boltstream.pp

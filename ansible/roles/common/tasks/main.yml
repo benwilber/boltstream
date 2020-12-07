@@ -1,0 +1,51 @@
+---
+- name: update system
+  yum:
+    name: "*"
+    state: latest
+    exclude:
+      - "nginx-*"
+
+- name: install system tools
+  yum:
+    name:
+      - wget
+      - nano
+      - bind-utils
+      - screen
+    state: latest
+
+- name: install system services
+  yum:
+    name:
+      - ntp
+      - dnsmasq
+    state: latest
+  notify:
+    - restart ntp client
+    - restart dns resolver
+
+- name: start and enable ntp client
+  service:
+    name: ntpd
+    state: started
+    enabled: yes
+
+- name: start and enable dns resolver
+  service:
+    name: dnsmasq
+    state: started
+    enabled: yes
+
+- name: install epel repository
+  yum:
+    name: epel-release
+    state: latest
+
+- name: add sysctl.conf
+  copy:
+    src: "{{ role_path }}/files/sysctl.conf"
+    dest: /etc/sysctl.conf
+    mode: 0644
+  notify:
+    - reload sysctl.conf

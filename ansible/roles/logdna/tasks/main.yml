@@ -1,0 +1,27 @@
+---
+- name: add logdna repo
+  copy:
+    src: "{{ role_path }}/files/logdna.repo"
+    dest: /etc/yum.repos.d/logdna.repo
+
+- rpm_key:
+    state: present
+    key: https://repo.logdna.com/logdna.gpg
+
+- name: install logdna agent
+  yum:
+    name: logdna-agent
+    state: latest
+
+- name: add logdna.conf
+  template:
+    src: "{{ role_path }}/files/logdna.conf.j2"
+    dest: /etc/logdna.conf
+  notify:
+    - restart logdna agent
+
+- name: start and enable logdna agent
+  service:
+    name: logdna-agent
+    state: started
+    enabled: yes

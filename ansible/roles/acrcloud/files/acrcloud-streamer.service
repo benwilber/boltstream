@@ -1,0 +1,12 @@
+[Unit]
+Description=ACRCloud Streamer
+After=network.target remote-fs.target nss-lookup.target
+
+[Service]
+User=nginx
+ExecStart=/etc/nginx/acrcloud-streamer/stream.py /etc/nginx/acrcloud-streamer/client.conf
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

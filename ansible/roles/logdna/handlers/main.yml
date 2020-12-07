@@ -1,0 +1,5 @@
+---
+- name: restart logdna agent
+  service:
+    name: logdna-agent
+    state: restarted

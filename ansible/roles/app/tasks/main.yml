@@ -1,0 +1,194 @@
+---
+- name: install app system dependencies
+  yum:
+    name:
+      - "@Development Tools"
+      - python36
+      - python36-devel
+      - rubygems
+      - redis
+      - python2-redis
+      - mariadb
+      - mariadb-devel
+    state: latest
+
+- name: install foreman
+  command: gem install foreman thor
+
+- name: create app user
+  user:
+    name: "{{ app_user }}"
+    home: "{{ app_root }}"
+    shell: /bin/bash
+    state: present
+
+- name: add app .bashrc
+  copy:
+    src: "{{ role_path }}/files/app.bashrc"
+    dest: "{{ app_root }}/.bashrc"
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: 0600
+  tags:
+    - app-code
+
+- name: create local dist directory
+  connection: local
+  local_action:
+    file path=../dist state=directory
+  become: no
+  run_once: yes
+  tags:
+    - app-code
+
+- name: export local app archive
+  connection: local
+  local_action:
+    shell git archive --format=tar.gz --output dist/HEAD.tar.gz HEAD
+  args:
+    chdir: ..
+  become: no
+  run_once: yes
+  tags:
+    - app-code
+
+- block:
+  - name: deploy app archive
+    unarchive:
+      src: ../dist/HEAD.tar.gz
+      dest: "{{ app_root }}"
+    notify:
+      - restart app
+    tags:
+      - app-code
+
+  - name: remove unneeded directories
+    file:
+      path: "{{ app_root }}/{{ item }}"
+      state: absent
+    with_items:
+      - ansible
+      - terraform
+    tags:
+      - app-code
+
+  - name: create app venv
+    command: "python3.6 -m venv {{ app_root }}/venv"
+    args:
+      creates: "{{ app_root }}/venv"
+    notify:
+      - restart app
+    tags:
+      - app-code
+
+  - name: upgrade pip
+    pip:
+      name: pip
+      state: latest
+      executable: "{{ app_root }}/venv/bin/pip"
+    tags:
+      - app-code
+
+  - name: install app dependencies
+    pip:
+      requirements: "{{ app_root }}/requirements.txt"
+      executable: "{{ app_root }}/venv/bin/pip"      
+    notify:
+      - restart app
+    tags:
+      - app-code
+
+  - name: add app .env
+    template:
+      src: "{{ role_path }}/files/app.env"
+      dest: "{{ app_root }}/.env"
+    notify:
+      - restart app
+    tags:
+      - app-code
+      - app-env
+
+  become_user: "{{ app_user }}"
+  
+- name: create app static directory
+  file:
+    path: "{{ web_root }}/static"
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: 0755
+  run_once: yes
+  tags:
+    - app-code
+
+- block:
+  - name: export app static files
+    command: foreman run -- venv/bin/python manage.py collectstatic --noinput
+    environment:
+      PATH: /usr/local/bin
+    args:
+      chdir: "{{ app_root }}"
+    run_once: yes
+    tags:
+      - app-code
+
+  - name: wait for cache
+    wait_for:
+      host: "{{ cache_host }}"
+      port: "{{ cache_port }}"
+      timeout: 300
+    tags:
+      - app-env
+      - app-code
+
+  - name: wait for database
+    wait_for:
+      host: "{{ database_host }}"
+      port: "{{ database_port }}"
+      timeout: 300
+    tags:
+      - app-env
+      - app-code
+
+  - name: apply database migrations
+    command: foreman run -- venv/bin/python manage.py migrate --noinput
+    environment:
+      PATH: /usr/local/bin
+    args:
+      chdir: "{{ app_root }}"
+    run_once: yes
+    tags:
+      - app-code
+
+  become_user: "{{ app_user }}"
+
+- name: export app systemd services
+  command: "foreman export --user={{ app_user }} --app={{ app_name }} --port={{ app_port }} systemd /usr/lib/systemd/system"
+  environment:
+    PATH: /usr/local/bin
+  args:
+    chdir: "{{ app_root }}"
+  notify:
+    - restart app
+  tags:
+    - app-code
+    - app-env
+
+- name: start and enable app
+  systemd:
+    name: "{{ app_name }}.target"
+    state: started
+    enabled: yes
+    daemon_reload: yes
+  tags:
+    - app-code
+
+- name: add expire viewers cron job
+  cron:
+    name: expire viewers
+    minute: "*"
+    hour: "*"
+    user: "{{ app_user }}"
+    job: "curl -sSf -X POST -H \"X-RTMP-Secret: {{ rtmp_secret }}\" https://{{ app_host }}/expire-viewers"
+  tags:
+    - app-code

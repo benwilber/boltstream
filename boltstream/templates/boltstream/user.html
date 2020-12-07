@@ -1,0 +1,193 @@
+{% extends "boltstream/base.html" %}
+{% load humanize %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block page_meta %}
+{% if active_stream %}
+<title>{{ user }} - {{ active_stream }} {% trans "on" %} boltstream.me</title>
+{% else %}
+<title>{{ user }} {% trans "on" %} boltstream.me</title>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid" style="margin-bottom: 10px;">
+    <div class="row">
+        <div class="col-md-1">
+            <button type="button" id="sidebar-collapse" class="btn btn-sm btn-primary float-left">
+                <i class="fas fa-align-left"></i>
+                <span>{% trans "live now" %}</span>
+            </button>
+        </div>
+        <div class="col-md-7">
+            {% if active_stream %}
+            <h2>{{ active_stream }}</h2>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<div class="wrapper">
+    <nav id="sidebar" class="closed">
+        <ul class="list-unstyled">
+            {% for stream in user.streams.live %}
+            <li class="embed-responsive embed-responsive-16by9">
+                <a href="{{ stream.get_absolute_url }}" title="{{ stream }}">
+                    <video autoplay loop muted poster="{{ stream.image_url }}?width=400" preload="auto" class="embed-responsive-item video-preview{% if stream == active_stream %} active{% endif %} stream-preview" style="width: 400;">
+                        <source src="{{ stream.preview_url }}" type="video/mp4">
+                    </video>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </nav>
+    <div class="container-fluid">
+        <div class="row">
+            {% if active_stream %}
+            <div id="player-col" class="col-md-8">
+                {% with stream=active_stream %}
+                {% include "boltstream/player.html" %}
+                <div id="feeditem-text" class="feeditem-text"></div>
+            </div>
+            <div id="chat-col" class="col-md-4">
+                {% include "boltstream/chat.html" %}
+                {% endwith %}
+            </div>
+            {% else %}
+            <h3>{% trans "no live streams" %}</h3>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'boltstream/css/video-7.3.0.min.css' %}" >
+<style>
+.feeditem-text {
+    font-size: 1.5em;
+}
+
+.wrapper {
+    display: flex;
+    align-items: stretch;
+}
+
+.video-preview {
+    opacity: 0.5;
+}
+
+.video-preview.active {
+    opacity: 1.0;
+}
+
+.video-preview:hover {
+    opacity: 1.0;
+}
+
+#sidebar {
+    min-width: 400px;
+    max-width: 400px;
+    transition: all 0.3s;
+}
+
+#sidebar.closed {
+    margin-left: -400px;
+}
+
+@media (max-width: 768px) {
+    .p-hide {
+        display: none;
+    }
+    /*
+    #sidebar {
+        margin-left: -400px;
+    }
+    #sidebar.closed {
+        margin-left: 0;
+    }
+    */
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    $("#sidebar-collapse").on("click", function() {
+        $("#sidebar").toggleClass("closed");
+        $("#player-col").toggleClass("p-hide");
+        $("#chat-col").toggleClass("p-hide");
+    });
+});
+</script>
+
+{% if active_stream %}
+<script src="{% static 'boltstream/js/video-7.3.0.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/p2p-media-loader-core@latest/build/p2p-media-loader-core.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/p2p-media-loader-hlsjs@latest/build/p2p-media-loader-hlsjs.min.js"></script>
+<script>
+var engine;
+(function() {
+    const ws = new WebSocket("{{ active_channel_url }}");
+    ws.onmessage = function(e) {
+        console.log(e.data);
+    }
+
+    engine = new p2pml.hlsjs.Engine();
+
+    engine.on(p2pml.core.Events.PieceBytesDownloaded, function(method, bytes) {
+        console.log("PieceBytesDownloaded", method, bytes);
+    });
+
+    engine.on(p2pml.core.Events.PieceBytesUploaded, function(method, bytes) {
+        console.log("PieceBytesUploaded", method, bytes);
+    });
+
+    const player = videojs("player", {
+        html5: {
+            hlsjsConfig: {
+                liveSyncDurationCount: 7,
+                loader: engine.createLoaderClass()
+            }
+        }
+    });
+
+    p2pml.hlsjs.initVideoJsContribHlsJsPlayer(player);
+
+    player.src({
+        src: "{{ active_stream.master_manifest_url }}",
+        type: "application/vnd.apple.mpegurl",
+        withCredentials: true,
+        cacheEncryptionKeys: true
+    });
+
+    player.on("loadedmetadata", () => {
+        $(".vjs-text-track-display").css({display: "none"});
+        $(".vjs-subs-caps-button").css({display: "none"});
+        $(".vjs-subtitles-menu-item").each(function() {
+            var $e = $(this);
+            $e.trigger("click");
+            $e.css({display: "none"});
+        });
+
+        var textTracks = player.textTracks();
+        for (var i=0; i<textTracks.length; i++) {
+            var tt = textTracks[i];
+            if (tt.label.indexOf("feed-") == 0) {
+                (function() {
+                    var t = tt;
+                    t.on("cuechange", () => {
+                        for (var i=0; i<t.activeCues.length; i++) {
+                            var msg = JSON.parse(t.activeCues[i].text);
+                            $("#feeditem-text").text(msg.payload.description);
+                        }
+                    });
+                })();
+            }
+        }
+    });
+})();
+</script>
+{% endif %}
+{% endblock %}

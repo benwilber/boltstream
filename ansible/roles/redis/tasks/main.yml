@@ -1,0 +1,22 @@
+---
+- name: install redis server
+  yum:
+    name: redis
+    state: latest
+  notify:
+    - restart redis server
+
+- name: add redis.conf
+  template:
+    src: "{{ role_path }}/files/redis.conf"
+    dest: /etc/redis.conf
+  notify:
+    - restart redis server
+  tags:
+    - redis-conf
+
+- name: start and enable redis server
+  service:
+    name: redis
+    state: started
+    enabled: yes

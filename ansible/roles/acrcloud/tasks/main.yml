@@ -1,0 +1,50 @@
+---
+- name: create acrcloud-streamer directory
+  file:
+    path: /etc/nginx/acrcloud-streamer
+    state: directory
+    mode: 0755
+  notify:
+    - restart acrcloud streamer
+
+- name: add acrcloud streamer script
+  copy:
+    src: "{{ role_path }}/files/live_stream_client-{{ acrcloud_version }}/stream.py"
+    dest: "/etc/nginx/acrcloud-streamer/stream.py"
+    mode: 0755
+  notify:
+    - restart acrcloud streamer
+
+- name: add acrcloud streamer native library
+  unarchive:
+    src: "{{ role_path }}/files/live_stream_client-{{ acrcloud_version }}/acrcloud_stream_decode.so.tar.gz"
+    dest: /etc/nginx/acrcloud-streamer
+    owner: root
+    group: root
+    mode: 0755
+    creates: /etc/nginx/acrcloud-streamer/acrcloud_stream_decode.so
+  notify:
+    - restart acrcloud streamer
+
+- name: add acrcloud streamer config
+  template:
+    src: "{{ role_path }}/files/acrcloud-streamer-client.conf"
+    dest: /etc/nginx/acrcloud-streamer/client.conf
+    mode: 0755
+  notify:
+    - restart acrcloud streamer
+
+- name: add acrcloud systemd service
+  copy:
+    src: "{{ role_path }}/files/acrcloud-streamer.service"
+    dest: /usr/lib/systemd/system/acrcloud-streamer.service
+    mode: 0644
+  notify:
+    - restart acrcloud streamer
+
+- name: start and enable acrcloud streamer
+  systemd:
+    name: acrcloud-streamer
+    state: started
+    enabled: yes
+    daemon_reload: yes

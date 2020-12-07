@@ -1,0 +1,26 @@
+{% extends "boltstream/base.html" %}
+{% load bootstrap4 %}
+{% load i18n %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <h1>{% trans "sign in" %}</h1>
+        </div>        
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <form action="{% url 'login' %}" method="POST">
+                {% csrf_token %}
+                {% bootstrap_field form.username show_label=False placeholder="username or email" %}
+                {% bootstrap_field form.password show_label=False placeholder="password" %}
+                {% buttons %}
+                <a class="btn btn-link" href="{% url 'password_reset' %}">{% trans "i forgot" %}</a>
+                <button type="submit" class="btn btn-primary float-right">{% trans 'sign in' %}</button>
+                {% endbuttons %}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

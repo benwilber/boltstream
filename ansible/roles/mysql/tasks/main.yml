@@ -1,0 +1,39 @@
+---
+- name: install mysql server
+  yum:
+    name:
+      - mariadb
+      - mariadb-devel
+      - mariadb-server
+      - MySQL-python
+    state: latest
+  notify:
+    - restart mysql server
+
+- name: add my.cnf
+  copy:
+    src: "{{ role_path }}/files/my.cnf"
+    dest: /etc/my.cnf
+  notify:
+    - restart mysql server
+
+- name: start and enable mysql server
+  service:
+    name: mariadb
+    state: started
+    enabled: yes
+
+- name: create mysql database
+  mysql_db:
+    name: "{{ database_name }}"
+    state: present
+    encoding: utf8mb4
+    collation: utf8mb4_unicode_ci
+
+- name: add mysql database user
+  mysql_user:
+    name: "{{ database_user }}"
+    password: "{{ database_password }}"
+    priv: "{{ database_name }}.*:ALL"
+    host: "%"
+    state: present

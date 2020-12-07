@@ -1,0 +1,24 @@
+---
+- name: import nux dextop gpg key
+  rpm_key:
+    key: http://li.nux.ro/download/nux/RPM-GPG-KEY-nux.ro
+    state: present
+
+- name: install nux dextop repository
+  yum:
+    name: http://li.nux.ro/download/nux/dextop/el7/x86_64/nux-dextop-release-0-1.el7.nux.noarch.rpm
+    state: installed
+
+- name: add ffmpeg rpms
+  copy:
+    src: "{{ role_path }}/files/rpms"
+    dest: /tmp/ffmpeg-rpms
+
+- name: discover ffmpeg rpms
+  command: find /tmp/ffmpeg-rpms -name "*.rpm"
+  register: ffmpeg_rpms
+
+- name: install ffmpeg rpms
+  yum:
+    name: "{{ ffmpeg_rpms.stdout_lines }}"
+    state: installed

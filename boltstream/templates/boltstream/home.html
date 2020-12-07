@@ -1,0 +1,90 @@
+{% extends "boltstream/base.html" %}
+{% load humanize %}
+{% load i18n %}
+
+{% block content %}
+<div class="container">
+    {% if streams %}
+    <div class="row">
+        <div class="col-md-12">
+            <h1>{% trans "live now" %}</h1>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div id="carousel-controls" class="carousel slide" data-ride="carousel">
+                <div class="carousel-inner">
+                    {% for stream in streams %}
+                    <div class="carousel-item{% if forloop.first %} active{% endif %}">
+                        <div align="center" class="embed-responsive embed-responsive-16by9">
+                            <a href="{{ stream.get_absolute_url }}" title="{{ stream }}">
+                                <video autoplay loop muted poster="{{ stream.image_url }}" preload="auto" class="embed-responsive-item">
+                                    <source src="{{ stream.preview_url }}" type="video/mp4">
+                                </video>
+                                <div class="carousel-caption d-none d-md-block" style="background-color: rgba(0, 0, 0, 0.5);">
+                                    <h5>{{ stream }}</h5>
+                                    <p>{% trans "started" %} <b>{{ stream.started_at|timesince }}</b> {% trans "ago" %}</p>
+                                    <p><b>{{ stream.viewers.count|intcomma }}</b> {% trans "watching" %}</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <a class="carousel-control-prev" href="#carousel-controls" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">{% trans "previous" %}</span>
+                </a>
+                <a class="carousel-control-next" href="#carousel-controls" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">{% trans "next" %}</span>
+                </a>
+            </div>
+        </div>        
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+       
+        {% comment %}
+        <div align="center" class="embed-responsive embed-responsive-16by9">
+            <a href="{% url 'stream' stream.user.username stream.uuid %}" title="{{ stream }}">
+                <img src="{{ stream.image_url }}?width=360" alt="{{ stream }}" class="img-fluid img-thumbnail embed-responsive-item">
+            </a>
+        </div>
+        <a href="{% url 'stream' stream.user.username stream.uuid %}" title="{{ stream }}">
+            <div class="media">
+                <img src="{{ stream.image_url }}?width=360" alt="{{ stream }}" class="img-fluid img-thumbnail embed-responsive-item">
+                <div class="media-body">
+                    <h5>{{ stream }}</h5>
+                    <p>{% trans "started" %} <b>{{ stream.started_at|timesince }}</b> {% trans "ago" %}</p>
+                    <p><b>{{ stream.viewers.count }}</b> {% trans "watching" %}</p>
+                </div>
+            </div>
+        </a>
+
+            <ul class="list-unstyled">
+                {% for stream in streams %}
+                <li class="media">
+                    <img src="{{ stream.image_url }}?width=360" alt="{{ stream }}" class="img-fluid img-thumbnail embed-responsive-item">
+                    <div class="media-body">
+                        <h5 class="mt-0 mb-1">{{ stream }}</h5>
+                        <p>{% trans "started" %} <b>{{ stream.started_at|timesince }}</b> {% trans "ago" %}</p>
+                        <p><b>{{ stream.viewers.count }}</b> {% trans "watching" %}</p>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endcomment %}
+    </div>
+    {% else %}
+    <div class="row justify-content-center" style="margin-top: 100px;">
+        <h1>{% trans "no live streams" %}</h1>
+    </div>
+    <div class="row justify-content-center" style="margin-top: 100px;">
+        <a class="btn btn-lg btn-primary" href="{% url 'login' %}">{% trans 'stream now' %}</a>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

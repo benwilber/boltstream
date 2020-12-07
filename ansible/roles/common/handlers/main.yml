@@ -1,0 +1,13 @@
+---
+- name: restart ntp client
+  service:
+    name: ntpd
+    state: restarted
+
+- name: restart dns resolver
+  service:
+    name: dnsmasq
+    state: restarted
+
+- name: reload sysctl.conf
+  command: sysctl -p

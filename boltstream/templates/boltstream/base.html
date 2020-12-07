@@ -1,0 +1,36 @@
+{% load i18n %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="{% static 'boltstream/css/bootstrap-4.3.1.min.css' %}">
+        <link rel="stylesheet" href="{% static 'boltstream/css/simplex.min.css' %}">
+
+        {% block page_meta %}
+        <title>boltstream.me</title>
+        {% endblock %}
+
+        {% block styles %}
+        {% endblock %}
+    </head>
+    <body>
+        {% block navbar %}
+        {% include "boltstream/navbar.html" %}
+        {% endblock %}
+
+        {% block content %}
+        {% endblock %}
+
+        <script type="text/javascript" src="{% static 'boltstream/js/jquery-3.3.1.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'boltstream/js/bootstrap.bundle-4.3.1.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'boltstream/js/popper-1.15.0.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'boltstream/js/fontawesome-v5.0.13.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'boltstream/js/solid-v5.0.13.min.js' %}"></script>
+
+        {% block scripts %}
+        {% endblock %}
+    </body>
+</html>

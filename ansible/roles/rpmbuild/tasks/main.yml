@@ -1,0 +1,34 @@
+---
+- name: install rpmbuild tools
+  yum:
+    name:
+      - rpm-build
+      - yum-utils
+      - "@Development Tools"
+    state: latest
+
+- name: add rpmbuild user
+  user:
+    name: mockbuild
+    state: present
+
+- block:
+  - name: create remote temporary directory
+    file:
+      path: "/home/mockbuild/{{ item }}"
+      state: directory
+      mode: 0700
+    with_items:
+      - .ansible
+      - .ansible/tmp
+
+  - name: create rpmbuild directories
+    file:
+      path: "/home/mockbuild/{{ item }}"
+      state: directory
+    with_items:
+      - rpmbuild
+      - rpmbuild/SPECS
+      - rpmbuild/SOURCES
+
+  become_user: mockbuild

@@ -1,0 +1,3 @@
+#!/bin/sh
+[[ -d venv ]] && . venv/bin/activate
+exec $*

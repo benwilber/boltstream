@@ -1,0 +1,30 @@
+---
+- name: import nux dextop gpg key
+  rpm_key:
+    key: http://li.nux.ro/download/nux/RPM-GPG-KEY-nux.ro
+    state: present
+
+- name: install nux dextop repository
+  yum:
+    name: http://li.nux.ro/download/nux/dextop/el7/x86_64/nux-dextop-release-0-1.el7.nux.noarch.rpm
+    state: installed
+
+- block:
+  - name: download ffmpeg sources
+    get_url:
+      url: "http://ffmpeg.org/releases/ffmpeg-{{ ffmpeg_version }}.tar.bz2"
+      dest: "/home/mockbuild/rpmbuild/SOURCES/ffmpeg-{{ ffmpeg_version }}.tar.bz2"
+
+  - name: add ffmpeg.spec
+    template:
+      src: "{{ role_path }}/files/ffmpeg.spec"
+      dest: /home/mockbuild/rpmbuild/SPECS/ffmpeg.spec
+
+  become_user: mockbuild
+
+- name: install ffmpeg build dependencies
+  command: yum-builddep -y /home/mockbuild/rpmbuild/SPECS/ffmpeg.spec
+
+- name: build ffmpeg rpms
+  command: rpmbuild -bb /home/mockbuild/rpmbuild/SPECS/ffmpeg.spec
+  become_user: mockbuild

@@ -1,0 +1,42 @@
+---
+- name: install nfs server
+  yum:
+    name: nfs-utils
+    state: latest
+  notify:
+    - restart nfs server
+
+- name: create nfs storage directories
+  file:
+    path: "{{ storage_path }}"
+    state: directory
+    mode: 0755
+    owner: nfsnobody
+    group: nfsnobody
+  notify:
+    - restart nfs server
+
+- name: mount storage volume
+  mount:
+    path: "{{ storage_path }}"
+    src: "LABEL=s-{{ region }}-{{ env }}"
+    fstype: ext4
+    state: present
+
+- name: touch mounted storage volume
+  file:
+    path: "{{ storage_path }}/.mounted"
+    state: touch
+
+- name: add nfs exports
+  template:
+    src: "{{ role_path }}/files/exports"
+    dest: /etc/exports
+  notify:
+    - restart nfs server
+
+- name: start and enable nfs server
+  service:
+    name: nfs-server
+    state: started
+    enabled: yes

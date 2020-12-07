@@ -1,0 +1,163 @@
+---
+- name: add nginx rpms
+  copy:
+    src: "{{ role_path }}/files/rpms"
+    dest: /tmp/nginx-rpms
+
+- name: discover nginx rpms
+  command: find /tmp/nginx-rpms -name "*.rpm"
+  register: nginx_rpms
+
+- name: install nginx rpms
+  yum:
+    name: "{{ nginx_rpms.stdout_lines }}"
+    state: installed
+  notify:
+    - restart nginx server
+    - restart nginx-rtmp server
+    - restart nginx-nchan server
+
+- name: add nginx logrotate config
+  copy:
+    src: "{{ role_path }}/files/logrotate-nginx"
+    dest: /etc/logrotate.d/nginx
+    mode: 0644
+
+- name: add boltstream selinux policy
+  copy:
+    src: "{{ role_path }}/files/boltstream.pp"
+    dest: /tmp/boltstream.pp
+  notify:
+    - install boltstream selinux policy
+
+- name: install boltstream selinux policy
+  command: semodule -i /tmp/boltstream.pp
+
+- name: add nginx-limits.conf
+  copy:
+    src: "{{ role_path }}/files/nginx-limits.conf"
+    dest: /etc/security/limits.d/nginx-limits.conf
+    mode: 0644
+  notify:
+    - restart nginx server
+    - restart nginx-rtmp server
+    - restart nginx-nchan server
+  tags:
+    - nginx-conf
+
+- name: add nginx systemd services
+  copy:
+    src: "{{ role_path }}/files/{{ item }}"
+    dest: "/usr/lib/systemd/system/{{ item }}"
+    mode: 0644
+  with_items:
+    - nginx-rtmp.service
+    - nginx-nchan.service
+  notify:
+    - restart nginx-rtmp server
+    - restart nginx-nchan server
+
+- name: add nginx config files
+  template:
+    src: "{{ role_path }}/files/{{ item }}"
+    dest: "/etc/nginx/{{ item }}"
+  with_items:
+    - nginx.conf
+    - nginx-rtmp.conf
+    - nginx-nchan.conf
+  notify:
+    - restart nginx server
+    - restart nginx-rtmp server
+    - restart nginx-nchan server
+  tags:
+    - nginx-conf
+
+- name: add rtmp-exec.py script
+  copy:
+    src: "{{ role_path }}/files/rtmp-exec.py"
+    dest: /etc/nginx/rtmp-exec.py
+    mode: 0755
+  tags:
+    - nginx-conf
+
+- name: create web root
+  file:
+    path: "{{ web_root }}"
+    state: directory
+    owner: nginx
+    group: nginx
+    mode: 0755
+  notify:
+    - restart nginx server
+    - restart nginx-rtmp server
+    - restart nginx-nchan server
+
+- name: wait for storage
+  wait_for:
+    host: "{{ storage_host }}"
+    port: 2049
+
+- name: mount web root
+  mount:
+    path: "{{ web_root }}"
+    src: "{{ storage_host }}:{{ storage_path }}"
+    fstype: nfs4
+    opts: nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,_netdev
+    state: mounted
+  notify:
+    - restart nginx server
+    - restart nginx-rtmp server
+    - restart nginx-nchan server
+  tags:
+    - nfs
+
+- name: create web directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: nginx
+    group: nginx
+    mode: 0755
+  with_items:
+    - "{{ web_root }}/live"
+    - "{{ web_root }}/keys"
+    - "{{ web_root }}/record"
+    - "{{ web_root }}/vod"
+  run_once: yes
+  notify:
+    - restart nginx server
+    - restart nginx-rtmp server
+    - restart nginx-nchan server
+
+- name: add web files
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ web_root }}/{{ item.dest }}"
+    owner: nginx
+    group: nginx
+    mode: 0644
+  run_once: yes
+  with_items:
+    - { src: "{{ role_path }}/files/index.html", dest: index.html }
+    - { src: "{{ role_path }}/files/offline.mp4", dest: offline.mp4 }
+    - { src: "{{ role_path }}/files/default_preview.mp4", dest: record/default_preview.mp4 }
+
+- name: start and enable nginx server
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: start and enable nginx-rtmp server
+  systemd:
+    name: nginx-rtmp
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+- name: start and enable nginx-nchan server
+  systemd:
+    name: nginx-nchan
+    state: started
+    enabled: yes
+    daemon_reload: yes

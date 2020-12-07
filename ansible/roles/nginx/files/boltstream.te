@@ -1,0 +1,49 @@
+
+module boltstream 1.0;
+
+require {
+	type redis_port_t;
+	type commplex_main_port_t;
+	type transproxy_port_t;
+	type cloud_init_t;
+	type httpd_config_t;
+	type systemd_logind_t;
+	type httpd_t;
+	type varnishd_t;
+	type us_cli_port_t;
+	type nfs_t;
+	class tcp_socket name_connect;
+	class dbus send_msg;
+	class dir { add_name create read remove_name rmdir write };
+	class file { create execute execute_no_trans getattr open read rename setattr unlink write };
+}
+
+#============= httpd_t ==============
+
+#!!!! This avc can be allowed using the boolean 'httpd_can_network_connect'
+allow httpd_t commplex_main_port_t:tcp_socket name_connect;
+allow httpd_t httpd_config_t:file { execute execute_no_trans };
+
+#!!!! This avc can be allowed using one of the these booleans:
+#     httpd_use_nfs, git_system_use_nfs
+allow httpd_t nfs_t:dir { add_name create read remove_name rmdir write };
+
+#!!!! This avc can be allowed using the boolean 'httpd_use_nfs'
+allow httpd_t nfs_t:file { create getattr open read rename setattr unlink write };
+
+#!!!! This avc can be allowed using the boolean 'httpd_can_network_connect'
+allow httpd_t redis_port_t:tcp_socket name_connect;
+
+#!!!! This avc can be allowed using the boolean 'httpd_can_network_connect'
+allow httpd_t transproxy_port_t:tcp_socket name_connect;
+
+#============= systemd_logind_t ==============
+allow systemd_logind_t cloud_init_t:dbus send_msg;
+
+#============= varnishd_t ==============
+
+#!!!! This avc can be allowed using the boolean 'varnishd_connect_any'
+allow varnishd_t transproxy_port_t:tcp_socket name_connect;
+
+#!!!! This avc can be allowed using the boolean 'varnishd_connect_any'
+allow varnishd_t us_cli_port_t:tcp_socket name_connect;

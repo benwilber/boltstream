@@ -1,0 +1,12 @@
+[Unit]
+Description=Varnish HTTP accelerator NCSA daemon
+After=varnish.service
+
+[Service]
+Type=forking
+PIDFile=/run/varnishncsa.pid
+ExecStart=/usr/bin/varnishncsa -a -w /var/log/varnish/varnishncsa.log -D -P /run/varnishncsa.pid -F '"%%{X-Forwarded-For}i" %%h %%l %%u %%t "%%r" %%s %%b "%%{Referer}i" "%%{User-agent}i" %%D %%{Varnish:hitmiss}x'
+
+[Install]
+WantedBy=multi-user.target
+

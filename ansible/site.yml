@@ -1,0 +1,87 @@
+---
+- hosts: "{{ region }}-{{ env }}-boltstream-me"
+  become: yes
+  vars:
+    logdna_ingest_key: "<your logdna_ingest_key>"
+  roles:
+    - { role: common, tags: ["common"] }
+    - { role: logdna, tags: ["common", "logdna"] }
+
+- hosts: "database-{{ region }}-{{ env }}-boltstream-me"
+  become: yes
+  vars:
+    database_name: boltstream
+    database_user: boltstream
+    database_password: "<your database_password>"
+  roles:
+    - { role: mysql, tags: ["database", "mysql"] }
+
+- hosts: "cache-{{ region }}-{{ env }}-boltstream-me"
+  become: yes
+  vars:
+    cache_port: 6379
+  roles:
+    - { role: redis, tags: ["cache", "redis"] }
+
+- hosts: "storage-{{ region }}-{{ env }}-boltstream-me"
+  become: yes
+  vars:
+    storage_path: "/mnt/storage-{{ region }}-{{ env }}"
+  roles:
+    - { role: nfs, tags: ["storage", "nfs"] }
+
+- hosts: "web-{{ region }}-{{ env }}-boltstream-me"
+  become: yes
+  vars:
+    app_name: boltstream
+    app_host: boltstream.me
+    app_port: 5000
+    app_user: app
+    app_root: /var/app
+    app_debug: no
+    web_root: /var/www
+    database_host: "database-internal-{{ region }}-{{ env }}.{{ app_host }}"
+    database_port: 3306
+    database_name: boltstream
+    database_user: boltstream
+    database_password: "<your database_password>"
+    aws_access_key_id: "<your aws_access_key_id>"
+    aws_secret_access_key: "<your aws_secret_access_key>"
+    aws_s3_custom_domain: "cdn-{{ region }}-{{ env }}.{{ app_host }}"
+    aws_s3_endpoint_url: "https://{{ region }}.digitaloceanspaces.com"
+    aws_s3_region_name: "{{ region }}"
+    aws_storage_bucket_name: "{{ region }}-{{ env }}-boltstream-me"
+    staticfiles_storage: boltstream.storage.ManifestStaticFilesStorageS3
+    cache_host: "cache-internal-{{ region }}-{{ env }}.{{ app_host }}"
+    cache_port: 6379
+    storage_host: "storage-internal-{{ region }}-{{ env }}.{{ app_host }}"
+    storage_path: "/mnt/storage-{{ region }}-{{ env }}"
+    broker_url: "redis://{{ cache_host }}:{{ cache_port }}/1"
+    cache_url: "redis://{{ cache_host }}:{{ cache_port }}/2"
+    rtmp_secret: "<your rtmp_secret>"
+    rtmp_endpoint: "rtmp://{{ app_host }}/app"
+    segment_seconds: 5
+    playlist_seconds: 30
+    live_enable_record: no
+    live_enable_encryption: no
+    vod_enable_encryption: no
+    key_interval_seconds: 60
+    nchan_use_redis: yes
+    sentry_dsn: "<your sentry_dsn>"
+    acrcloud_version: 1.1.0
+    acrcloud_console_access_key: "<your acrcloud_console_access_key>"
+    acrcloud_console_access_secret: "<your acrcloud_console_access_secret>"
+    acrcloud_bucket_name: "<your acrcloud_bucket_name>"
+    sportradar_api_key: "<your sportradar_api_key>"
+    ffmpeg_version: 4.1.4
+    web_concurrency: 4
+    worker_concurrency: 4
+  roles:
+    # - { role: rpmbuild, tags: ["rpmbuild"]}
+    # - { role: ffmpeg-build, tags: ["ffmpeg-build"]}
+    # - { role: nginx-build, tags: ["nginx-build"]}
+    - { role: ffmpeg, tags: ["web", "ffmpeg"] }
+    - { role: nginx, tags: ["web", "nginx"] }
+    - { role: varnish, tags: ["web", "varnish"] }
+    - { role: app, tags: ["web", "app"] }
+    # - { role: acrcloud, tags: ["web", "acrcloud"] }

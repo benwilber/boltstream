@@ -1,0 +1,56 @@
+---
+- name: add varnish repository
+  copy:
+    src: "{{ role_path }}/files/varnish.repo"
+    dest: /etc/yum.repos.d/varnish.repo
+
+- name: install varnish server
+  yum:
+    name: varnish
+    state: latest
+  notify:
+    - restart varnish server
+    - restart varnishncsa server
+
+- name: add varnish configurations
+  copy:
+    src: "{{ role_path }}/files/{{ item }}"
+    dest: "/etc/varnish/{{ item }}"
+  with_items:
+    - varnish.params
+    - default.vcl
+  notify:
+    - restart varnish server
+    - restart varnishncsa server
+  tags:
+    - varnish-conf
+
+- name: add varnish-limits.conf
+  copy:
+    src: "{{ role_path }}/files/varnish-limits.conf"
+    dest: /etc/security/limits.d/varnish-limits.conf
+    mode: 0644
+  tags:
+    - varnish-conf
+  notify:
+    - restart varnish server
+
+- name: start and enable varnish server
+  service:
+    name: varnish
+    state: started
+    enabled: yes
+
+- name: add varnishncsa.service
+  copy:
+    src: "{{ role_path }}/files/varnishncsa.service"
+    dest: /usr/lib/systemd/system/varnishncsa.service
+  notify:
+    - restart varnishncsa server
+
+- name: start and enable varnishncsa server
+  systemd:
+    name: varnishncsa
+    state: started
+    enabled: yes
+    daemon_reload: yes

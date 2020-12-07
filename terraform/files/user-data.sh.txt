@@ -1,0 +1,42 @@
+#!/bin/bash
+export HOME=/root
+
+yum update -y
+yum install -y epel-release
+yum install -y git ansible
+
+cat <<- EOF > "$HOME/.ssh/id_rsa-deploy-key"
+${deploy_key}
+EOF
+
+chmod 0600 "$HOME/.ssh/id_rsa-deploy-key"
+
+cat <<- EOF > /etc/ansible/hosts
+[${region}-${env}-$(tr "." "-" <<< "${domain}")]
+localhost ansible_connection=local
+
+[database-${region}-${env}-$(tr "." "-" <<< "${domain}")]
+localhost ansible_connection=local
+
+[cache-${region}-${env}-$(tr "." "-" <<< "${domain}")]
+localhost ansible_connection=local
+
+[storage-${region}-${env}-$(tr "." "-" <<< "${domain}")]
+localhost ansible_connection=local
+
+[web-${region}-${env}-$(tr "." "-" <<< "${domain}")]
+localhost ansible_connection=local
+EOF
+
+exec ansible-pull \
+    --accept-host-key \
+    --private-key "$HOME/.ssh/id_rsa-deploy-key" \
+    --connection local \
+    --tags "${tags}" \
+    --only-if-changed \
+    --clean \
+    --purge \
+    --checkout master \
+    --directory "$HOME/${region}-${env}-$(tr "." "-" <<< "${domain}")" \
+    --extra-vars "region=${region} env=${env}" \
+    --url "${repo_url}" ansible/site.yml

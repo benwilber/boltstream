@@ -1,0 +1,40 @@
+---
+- block:
+  - name: download nginx source rpm
+    command: yumdownloader --source --destdir=/home/mockbuild nginx
+
+  - name: install nginx source rpm
+    command: rpm --upgrade "/home/mockbuild/nginx-*.src.rpm"
+    args:
+      warn: no
+
+  - name: fetch nginx module sources
+    unarchive:
+      src: "{{ item }}"
+      dest: /home/mockbuild
+      remote_src: yes
+    with_items:
+      - https://github.com/sergey-dryabzhinsky/nginx-rtmp-module/archive/dev.tar.gz
+      - https://github.com/kaltura/nginx-vod-module/archive/1.24.tar.gz
+      - https://github.com/yaoweibin/ngx_http_substitutions_filter_module/archive/v0.6.4.tar.gz
+      - https://github.com/simplresty/ngx_devel_kit/archive/v0.3.1rc1.tar.gz
+      - https://github.com/openresty/set-misc-nginx-module/archive/v0.32rc1.tar.gz
+      - https://github.com/slact/nchan/archive/v1.2.6.tar.gz
+
+  - name: add nginx-rtmp.spec
+    copy:
+      src: "{{ role_path }}/files/nginx-rtmp.spec"
+      dest: /home/mockbuild/rpmbuild/SPECS/nginx-rtmp.spec
+
+  become_user: mockbuild
+
+- name: install nginx build dependencies
+  command: yum-builddep -y /home/mockbuild/rpmbuild/SPECS/nginx-rtmp.spec
+
+- name: build nginx
+  command: rpmbuild -bb /home/mockbuild/rpmbuild/SPECS/nginx-rtmp.spec
+  environment:
+    LD_LIBRARY_PATH: /usr/lib64
+    LIBRARY_PATH: /usr/lib64
+    C_INCLUDE_PATH: /usr/include/ffmpeg
+  become_user: mockbuild

@@ -1,0 +1,11 @@
+---
+- name: restart varnish server
+  service:
+    name: varnish
+    state: restarted
+
+- name: restart varnishncsa server
+  systemd:
+    name: varnishncsa
+    state: restarted
+    daemon_reload: yes

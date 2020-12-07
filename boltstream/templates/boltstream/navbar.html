@@ -1,0 +1,53 @@
+{% load i18n %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light" style="margin: 0px 0px 20px 0px;">
+    <a class="navbar-brand" href="{% url 'home' %}">boltstream.me</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-content" aria-controls="navbar-content" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar-content" class="collapse navbar-collapse">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                {% if request.user.is_authenticated %}
+                <a class="nav-link" href="{% url 'profile' request.user.username %}">{% trans "stream now" %}</a>
+                {% else %}
+                <a class="nav-link" href="{% url 'login' %}">{% trans "stream" %}</a>
+                {% endif %}
+            </li>
+            {% if request.user.is_authenticated %}
+            <li class="nav-item dropdown">
+                <a id="navbar-dropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ request.user }}</a>
+                <div class="dropdown-menu" aria-labelledby="navbar-dropdown">
+                    <a class="dropdown-item" href="{% url 'user' request.user.username %}">{% trans "me" %}</a>
+                    {% if request.user.is_privileged %}
+                    <a class="dropdown-item" href="{% url 'admin:index' %}">{% trans "django admin" %}</a>
+                    {% endif %}
+                    <div class="dropdown-divider"></div>
+
+                    <form class="form-inline" action="{% url 'logout' %}" method="POST">
+                        {% csrf_token %}
+                        <button class="dropdown-item" type="submit">{% trans 'sign out' %}</button>
+                    </form>
+                </div>
+            </li>
+            {% endif %}
+        </ul>
+        <form id="search-form" class="form-inline my-2 my-lg-0" action="{% url 'home' %}" method="GET">
+            <input id="search-input" class="form-control mr-sm-2" type="search" name="search" placeholder="{% trans 'search streams' %}" aria-label="{% trans 'search' %}">
+            <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">{% trans 'search' %}</button>
+            <button id="clear-search" style="display: none;" class="btn btn-link my-2 my-sm-0" type="reset" onclick="clearSearch();">{% trans 'clear' %}</button>
+        </form>
+    </div>
+</nav>
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const search = params.get("search");
+    if (search) {
+        document.getElementById("search-input").value = search;
+        document.getElementById("clear-search").style.display = "";
+    }
+
+    function clearSearch() {
+        window.location = "/";
+    }
+</script>

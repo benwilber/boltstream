@@ -1,0 +1,7 @@
+[logdna]
+name=LogDNA packages
+baseurl=https://repo.logdna.com/el6/
+enabled=1
+gpgcheck=1
+gpgkey=https://repo.logdna.com/logdna.gpg
+
