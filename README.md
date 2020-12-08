@@ -61,6 +61,32 @@ At the end of the Terraform deployment (might take 10-15 minutes), you will have
 
 Happy Streaming!
 
+## Running Locally
+
+If you're interested in running the Django app locallly, then you can do:
+
+```shell
+# Set up Python virtualenv
+$ make venv
+$ source venv/bin/activate
+
+# Install Python dependencies
+$ make deps
+
+# Apply database migrations (db.sqlite3) and load the initial data
+$ make cleandb
+
+# Run the Django development server
+$ make run
+```
+
+You can log in with the default user at:
+
+Website|Username|Password
+:--|:--|:--
+[http://localhost:8000/sign-in](http://localhost:8000/sign-in)|`boltstream`|`boltstream`
+
+
 ## Help Wanted!
 
 I put this stack together about a year ago and haven't been able to push much further on it.
