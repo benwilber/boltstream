@@ -40,7 +40,7 @@ This is the result of a series of blog posts that I made [here](https://benwilbe
 * [SportRadar](https://www.sportradar.com/)
 	* Realtime sports play-by-play data synchronized to your live streams
 * [ACRCloud](https://www.acrcloud.com/)
-	* Audio content recognition (Shazaam for your live streams)
+	* Audio content recognition (Shazam for your live streams)
 
 	
 ## Getting Started
