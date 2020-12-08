@@ -1,6 +1,6 @@
 from datetime import timedelta
 from functools import partial
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
@@ -24,10 +24,10 @@ make_stream_key = partial(get_random_string, 20)
 
 class UserManager(DjangoUserManager):
     def get_by_natural_key(self, uuid):
-        try:
-            return self.get(uuid=uuid)
-        except ValueError:
-            return super().get_by_natural_key(uuid)
+        if not isinstance(uuid, UUID):
+            uuid = UUID(uuid)
+
+        return self.get(uuid=uuid)
 
     def active(self):
         return self.filter(is_active=True)
@@ -49,8 +49,6 @@ class UserManager(DjangoUserManager):
 
 
 class User(AbstractUser):
-
-    USERNAME_FIELD = "username"
 
     uuid = models.UUIDField(
         default=uuid4, unique=True, editable=False, verbose_name=_("UUID")
