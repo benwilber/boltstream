@@ -43,7 +43,7 @@ SECRET_KEY = ENV.str("SECRET_KEY", "debug-secret")
 DEBUG = ENV.bool("DEBUG", True)
 
 ALLOWED_HOSTS = ["*"]
-APP_HOST = ENV.str("APP_HOST", "0.0.0.0")
+APP_HOST = ENV.str("APP_HOST", "localhost")
 
 # Application definition
 
@@ -106,14 +106,9 @@ LOGGING = {
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'boltstream',
-        'USER': ENV.str("DB_USER", "boltstream"),
-        'PASSWORD': ENV.str("DB_PASS", "boltstream"),
-        'HOST': ENV.str("DB_HOST", "postgres"),
-        'PORT': ENV.str("DB_PORT", "5432")
-    }
+    "default": ENV.db_url(
+        default="sqlite:///{}".format(os.path.join(BASE_DIR, "db.sqlite3"))
+    )
 }
 
 CACHES = {"default": ENV.cache_url(default="dummycache://")}

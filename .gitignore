@@ -102,6 +102,7 @@ ENV/
 # Django development database
 db.sqlite3
 static/
+!docker/nginx/static/
 !boltstream/static/
 media/
 

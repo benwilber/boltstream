@@ -36,9 +36,9 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./docker/nginx/offline.mp4:/etc/nginx/offline.mp4
-      - ./docker/nginx/default_preview.mp4:/etc/nginx/default_preview.mp4
-      - ./docker/nginx/rtmp-exec.py:/etc/nginx/rtmp-exec.py
+      - ./docker/nginx/static/offline.mp4:/etc/nginx/offline.mp4
+      - ./docker/nginx/static/default_preview.mp4:/etc/nginx/default_preview.mp4
+      - ./docker/nginx/static/rtmp-exec.py:/etc/nginx/rtmp-exec.py
       - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf.template
 
   nginx-rtmp:
