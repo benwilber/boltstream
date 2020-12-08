@@ -6,7 +6,7 @@ RUN apk add --no-cache musl-dev gcc make libffi-dev postgresql-dev ffmpeg
 RUN adduser -Ds /bin/nologin boltstream
 USER boltstream
 RUN mkdir -p /home/boltstream/app/
-WORKDIR
+WORKDIR /home/boltstream/app/
 ENV PATH="/home/boltstream/.local/bin:${PATH}"
 
 COPY --chown=boltstream:boltstream requirements.txt requirements.txt
