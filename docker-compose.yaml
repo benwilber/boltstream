@@ -2,6 +2,7 @@ version: '3.7'
 
 services:
   boltstream:
+    container_name: boltstream_django
     build: .
     image: 'boltstream'
     env_file: '.env'
@@ -17,6 +18,7 @@ services:
       - redis
 
   postgres:
+    container_name: boltstream_postgres
     image: postgres
     restart: unless-stopped
     environment:
@@ -25,6 +27,7 @@ services:
       - POSTGRES_PASSWORD=boltstream
 
   nginx:
+    container_name: boltstream_nginx
     build:
       context: .
       dockerfile: Dockerfile-nginx
@@ -39,6 +42,7 @@ services:
       - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf.template
 
   nginx-rtmp:
+    container_name: boltstream_nginx_rtmp
     build:
       context: .
       dockerfile: Dockerfile-nginx
@@ -51,6 +55,7 @@ services:
       - ./docker/nginx/nginx-rtmp.conf:/etc/nginx/nginx.conf.template
 
   nginx-nchan:
+    container_name: boltstream_nginx_nchan
     build:
       context: .
       dockerfile: Dockerfile-nginx
@@ -67,6 +72,4 @@ services:
     container_name: redis
     image: redis:5-alpine
     hostname: redis
-    ports:
-      - "6379:6379"
     restart: unless-stopped
