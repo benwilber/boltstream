@@ -47,6 +47,7 @@ This is the result of a series of blog posts that I made [here](https://benwilbe
 
 Clone this repo!
 
+#### Terraform / Ansible
 There is a [Terraform](https://terraform.io/) configuration for deploying this infrastructure on [DigitalOcean](https://www.digitalocean.com/).
 
 First, edit `ansible/site.yml` and update all the variables like `<your ...variable_here>`.
@@ -57,14 +58,27 @@ You will also need to modify some variables in `terraform/terraform.tfvars`, and
 $ make apply
 ```
 
+#### Docker
+
+Will take a long time to build nginx/ffmpeg but only required once. 
+
+Modify your `.env` to suit your needs.
+
+```
+git clone https://github.com/nitrag/boltstream.git
+git checkout dockerize
+docker-compose build
+docker-compose up -d
+docker-compose stop boltstream
+docker-compose run boltstream python manage.py migrate 
+docker-compose run boltstream python manage.py createsuperuser
+docker-compose up -d
+```
+
 At the end of the Terraform deployment (might take 10-15 minutes), you will have a full self-hosted live video streaming platform with your own RTMP ingest and playback endpoints.
 
 Happy Streaming!
 
 ## Help Wanted!
-
-I put this stack together about a year ago and haven't been able to push much further on it.
-
-Ideally it could be deployed in Docker (I don't know anything about Docker or Kubernetes).  The nginx and Django stuff seems like it could be pretty easy to containerize.
 
 Help me package this up!  We need more federated live-streaming platforms!  It can't just always be Twitch.tv, YouTube, and Facebook!
