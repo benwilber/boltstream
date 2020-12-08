@@ -1,0 +1,794 @@
+[
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "auth",
+    "model": "permission"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "auth",
+    "model": "group"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "contenttypes",
+    "model": "contenttype"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "sessions",
+    "model": "session"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "authtoken",
+    "model": "token"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "authtoken",
+    "model": "tokenproxy"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "boltstream",
+    "model": "user"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "boltstream",
+    "model": "feed"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "boltstream",
+    "model": "stream"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "boltstream",
+    "model": "profile"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "boltstream",
+    "model": "feeditem"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "boltstream",
+    "model": "viewer"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "boltstream",
+    "model": "credit"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "boltstream",
+    "model": "streamsession"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "admin",
+    "model": "logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add permission",
+    "content_type": [
+      "auth",
+      "permission"
+    ],
+    "codename": "add_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change permission",
+    "content_type": [
+      "auth",
+      "permission"
+    ],
+    "codename": "change_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete permission",
+    "content_type": [
+      "auth",
+      "permission"
+    ],
+    "codename": "delete_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view permission",
+    "content_type": [
+      "auth",
+      "permission"
+    ],
+    "codename": "view_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add group",
+    "content_type": [
+      "auth",
+      "group"
+    ],
+    "codename": "add_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change group",
+    "content_type": [
+      "auth",
+      "group"
+    ],
+    "codename": "change_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete group",
+    "content_type": [
+      "auth",
+      "group"
+    ],
+    "codename": "delete_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view group",
+    "content_type": [
+      "auth",
+      "group"
+    ],
+    "codename": "view_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add content type",
+    "content_type": [
+      "contenttypes",
+      "contenttype"
+    ],
+    "codename": "add_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change content type",
+    "content_type": [
+      "contenttypes",
+      "contenttype"
+    ],
+    "codename": "change_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete content type",
+    "content_type": [
+      "contenttypes",
+      "contenttype"
+    ],
+    "codename": "delete_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view content type",
+    "content_type": [
+      "contenttypes",
+      "contenttype"
+    ],
+    "codename": "view_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add session",
+    "content_type": [
+      "sessions",
+      "session"
+    ],
+    "codename": "add_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change session",
+    "content_type": [
+      "sessions",
+      "session"
+    ],
+    "codename": "change_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete session",
+    "content_type": [
+      "sessions",
+      "session"
+    ],
+    "codename": "delete_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view session",
+    "content_type": [
+      "sessions",
+      "session"
+    ],
+    "codename": "view_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add Token",
+    "content_type": [
+      "authtoken",
+      "token"
+    ],
+    "codename": "add_token"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change Token",
+    "content_type": [
+      "authtoken",
+      "token"
+    ],
+    "codename": "change_token"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete Token",
+    "content_type": [
+      "authtoken",
+      "token"
+    ],
+    "codename": "delete_token"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view Token",
+    "content_type": [
+      "authtoken",
+      "token"
+    ],
+    "codename": "view_token"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add token",
+    "content_type": [
+      "authtoken",
+      "tokenproxy"
+    ],
+    "codename": "add_tokenproxy"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change token",
+    "content_type": [
+      "authtoken",
+      "tokenproxy"
+    ],
+    "codename": "change_tokenproxy"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete token",
+    "content_type": [
+      "authtoken",
+      "tokenproxy"
+    ],
+    "codename": "delete_tokenproxy"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view token",
+    "content_type": [
+      "authtoken",
+      "tokenproxy"
+    ],
+    "codename": "view_tokenproxy"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add user",
+    "content_type": [
+      "boltstream",
+      "user"
+    ],
+    "codename": "add_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change user",
+    "content_type": [
+      "boltstream",
+      "user"
+    ],
+    "codename": "change_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete user",
+    "content_type": [
+      "boltstream",
+      "user"
+    ],
+    "codename": "delete_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view user",
+    "content_type": [
+      "boltstream",
+      "user"
+    ],
+    "codename": "view_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add feed",
+    "content_type": [
+      "boltstream",
+      "feed"
+    ],
+    "codename": "add_feed"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change feed",
+    "content_type": [
+      "boltstream",
+      "feed"
+    ],
+    "codename": "change_feed"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete feed",
+    "content_type": [
+      "boltstream",
+      "feed"
+    ],
+    "codename": "delete_feed"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view feed",
+    "content_type": [
+      "boltstream",
+      "feed"
+    ],
+    "codename": "view_feed"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add stream",
+    "content_type": [
+      "boltstream",
+      "stream"
+    ],
+    "codename": "add_stream"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change stream",
+    "content_type": [
+      "boltstream",
+      "stream"
+    ],
+    "codename": "change_stream"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete stream",
+    "content_type": [
+      "boltstream",
+      "stream"
+    ],
+    "codename": "delete_stream"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view stream",
+    "content_type": [
+      "boltstream",
+      "stream"
+    ],
+    "codename": "view_stream"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add profile",
+    "content_type": [
+      "boltstream",
+      "profile"
+    ],
+    "codename": "add_profile"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change profile",
+    "content_type": [
+      "boltstream",
+      "profile"
+    ],
+    "codename": "change_profile"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete profile",
+    "content_type": [
+      "boltstream",
+      "profile"
+    ],
+    "codename": "delete_profile"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view profile",
+    "content_type": [
+      "boltstream",
+      "profile"
+    ],
+    "codename": "view_profile"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add feed item",
+    "content_type": [
+      "boltstream",
+      "feeditem"
+    ],
+    "codename": "add_feeditem"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change feed item",
+    "content_type": [
+      "boltstream",
+      "feeditem"
+    ],
+    "codename": "change_feeditem"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete feed item",
+    "content_type": [
+      "boltstream",
+      "feeditem"
+    ],
+    "codename": "delete_feeditem"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view feed item",
+    "content_type": [
+      "boltstream",
+      "feeditem"
+    ],
+    "codename": "view_feeditem"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add viewer",
+    "content_type": [
+      "boltstream",
+      "viewer"
+    ],
+    "codename": "add_viewer"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change viewer",
+    "content_type": [
+      "boltstream",
+      "viewer"
+    ],
+    "codename": "change_viewer"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete viewer",
+    "content_type": [
+      "boltstream",
+      "viewer"
+    ],
+    "codename": "delete_viewer"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view viewer",
+    "content_type": [
+      "boltstream",
+      "viewer"
+    ],
+    "codename": "view_viewer"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add credit",
+    "content_type": [
+      "boltstream",
+      "credit"
+    ],
+    "codename": "add_credit"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change credit",
+    "content_type": [
+      "boltstream",
+      "credit"
+    ],
+    "codename": "change_credit"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete credit",
+    "content_type": [
+      "boltstream",
+      "credit"
+    ],
+    "codename": "delete_credit"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view credit",
+    "content_type": [
+      "boltstream",
+      "credit"
+    ],
+    "codename": "view_credit"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add stream session",
+    "content_type": [
+      "boltstream",
+      "streamsession"
+    ],
+    "codename": "add_streamsession"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change stream session",
+    "content_type": [
+      "boltstream",
+      "streamsession"
+    ],
+    "codename": "change_streamsession"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete stream session",
+    "content_type": [
+      "boltstream",
+      "streamsession"
+    ],
+    "codename": "delete_streamsession"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view stream session",
+    "content_type": [
+      "boltstream",
+      "streamsession"
+    ],
+    "codename": "view_streamsession"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add log entry",
+    "content_type": [
+      "admin",
+      "logentry"
+    ],
+    "codename": "add_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change log entry",
+    "content_type": [
+      "admin",
+      "logentry"
+    ],
+    "codename": "change_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete log entry",
+    "content_type": [
+      "admin",
+      "logentry"
+    ],
+    "codename": "delete_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view log entry",
+    "content_type": [
+      "admin",
+      "logentry"
+    ],
+    "codename": "view_logentry"
+  }
+},
+{
+  "model": "boltstream.user",
+  "fields": {
+    "password": "pbkdf2_sha256$216000$yteKVIGL4d2j$hw343GO1drdYmmKJ5Zy0xrMO6cyNJGYIDdyhQkcDdLA=",
+    "last_login": null,
+    "is_superuser": true,
+    "username": "boltstream",
+    "first_name": "Boltstream",
+    "last_name": "User",
+    "email": "boltstream@example.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2020-12-08T22:44:47Z",
+    "uuid": "1882924f-276f-4a25-a262-2b00ad8d0898",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "boltstream.profile",
+  "fields": {
+    "user": [
+      "1882924f-276f-4a25-a262-2b00ad8d0898"
+    ],
+    "name": "Boltstream User"
+  }
+}
+]

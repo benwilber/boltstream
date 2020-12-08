@@ -11,7 +11,7 @@ venv:
 	python3 -m venv venv
 
 deps:
-	python -m pip install --upgrade pip
+	python -m pip install --upgrade pip wheel
 	PYCURL_SSL_LIBRARY=$(PYCURL_SSL_LIBRARY) \
 	LDFLAGS=$(LDFLAGS) CPPFLAGS=$(CPPFLAGS) \
 		python -m pip install --requirement=requirements.txt
@@ -30,6 +30,13 @@ statics:
 
 test:
 	./manage.py test
+
+dumpinitialdata:
+	./manage.py dumpdata --natural-foreign --natural-primary \
+		--exclude=admin.logentry --all --indent=2 > boltstream/fixtures/initial_data.json
+
+loadinitialdata:
+	./manage.py loaddata initial_data
 
 dumptestdata:
 	./manage.py dumpdata --natural-foreign --natural-primary \
@@ -54,11 +61,11 @@ clean:
 	rm -rf venv media static db.sqlite3 staticfiles.json
 	$(MAKE) venv
 	mkdir media
-	sh -c "./bin/boot $(MAKE) deps migrate loadtestdata statics"
+	sh -c "./bin/boot $(MAKE) deps migrate loadinitialdata statics"
 
 cleandb:
 	rm -f db.sqlite3
-	$(MAKE) migrate loadtestdata
+	$(MAKE) migrate loadinitialdata
 
 run:
 	./manage.py runserver
