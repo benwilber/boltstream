@@ -1,0 +1,72 @@
+version: '3.7'
+
+services:
+  boltstream:
+    build: .
+    image: 'boltstream'
+    env_file: '.env'
+    #command: ["gunicorn", "-c", "gunicorn.conf.py", "app.wsgi:application"]
+    command: 'python manage.py runserver 0.0.0.0:${PORT}'
+    restart: unless-stopped
+    volumes:
+      - ./boltstream:/home/boltstream/app/boltstream
+    ports:
+      - ${PORT}:${PORT}
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=boltstream
+      - POSTGRES_USER=boltstream
+      - POSTGRES_PASSWORD=boltstream
+
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile-nginx
+    restart: unless-stopped
+    env_file: '.env'
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./docker/nginx/offline.mp4:/etc/nginx/offline.mp4
+      - ./docker/nginx/default_preview.mp4:/etc/nginx/default_preview.mp4
+      - ./docker/nginx/rtmp-exec.py:/etc/nginx/rtmp-exec.py
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf.template
+
+  nginx-rtmp:
+    build:
+      context: .
+      dockerfile: Dockerfile-nginx
+    restart: unless-stopped
+    env_file: '.env'
+    ports:
+      - "8081:8081"
+      - "1935:1935"
+    volumes:
+      - ./docker/nginx/nginx-rtmp.conf:/etc/nginx/nginx.conf.template
+
+  nginx-nchan:
+    build:
+      context: .
+      dockerfile: Dockerfile-nginx
+    restart: unless-stopped
+    env_file: '.env'
+    ports:
+      - "8082:8082"
+    volumes:
+      - ./docker/nginx/nginx-nchan.conf:/etc/nginx/nginx.conf.template
+    depends_on:
+      - redis
+
+  redis:
+    container_name: redis
+    image: redis:5-alpine
+    hostname: redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped

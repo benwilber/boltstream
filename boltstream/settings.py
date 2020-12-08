@@ -43,8 +43,7 @@ SECRET_KEY = ENV.str("SECRET_KEY", "debug-secret")
 DEBUG = ENV.bool("DEBUG", True)
 
 ALLOWED_HOSTS = ["*"]
-APP_HOST = ENV.str("APP_HOST", "localhost")
-
+APP_HOST = ENV.str("APP_HOST", "0.0.0.0")
 
 # Application definition
 
@@ -107,9 +106,14 @@ LOGGING = {
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
-    "default": ENV.db_url(
-        default="sqlite:///{}".format(os.path.join(BASE_DIR, "db.sqlite3"))
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'boltstream',
+        'USER': ENV.str("DB_USER", "boltstream"),
+        'PASSWORD': ENV.str("DB_PASS", "boltstream"),
+        'HOST': ENV.str("DB_HOST", "postgres"),
+        'PORT': ENV.str("DB_PORT", "5432")
+    }
 }
 
 CACHES = {"default": ENV.cache_url(default="dummycache://")}
@@ -163,13 +167,9 @@ BROKER_URL = ENV.str("BROKER_URL", None)
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
-
 TIME_ZONE = "UTC"
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 

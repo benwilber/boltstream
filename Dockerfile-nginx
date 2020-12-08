@@ -1,0 +1,235 @@
+FROM alpine:3 as build
+ARG NGINX_VERSION=1.18.0
+ARG NGINX_NCHAN_VERSION=1.2.7
+ARG NGINX_RTMP_VERSION=dev
+ARG NGINX_VOD_VERSION=1.27
+ARG NGINX_SUBSTITUTIONS_VERSION=0.6.4
+ARG NGINX_DEVEL_KIT_VERSION=0.3.1
+ARG NGINX_SET_MISC_VERSION=0.32
+ARG FFMPEG_VERSION=4.3.1
+ARG FFMPEG_BASEDIR=/usr/local
+ARG MAKEFLAGS="-j4"
+
+# Build dependencies.
+RUN apk add --update \
+  build-base \
+  coreutils \
+  ca-certificates \
+  curl \
+  gcc \
+  libc-dev \
+  libgcc \
+  linux-headers \
+  make \
+  musl-dev \
+  pcre-dev \
+  freetype-dev \
+  gd-dev \
+  geoip-dev \
+  perl-dev \
+  openjpeg-dev \
+  lame-dev \
+  libogg-dev \
+  libass \
+  libass-dev \
+  libvpx-dev \
+  libjpeg-turbo-dev \
+  libpng-dev \
+  libvorbis-dev \
+  libwebp-dev \
+  libxml2-dev \
+  libxslt-dev \
+  libtheora-dev \
+  v4l-utils-dev \
+  libvdpau-dev \
+  openssl-dev \
+  opus-dev \
+  pkgconf \
+  pkgconfig \
+  rtmpdump-dev \
+  soxr-dev \
+  speex-dev \
+  wget \
+  x264-dev \
+  x265-dev \
+  xvidcore-dev \
+  zlib-dev \
+  yasm
+
+RUN echo http://dl-cdn.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories
+RUN apk add --update fdk-aac-dev
+
+# Get FFmpeg source.
+RUN cd /tmp/ && \
+  wget http://ffmpeg.org/releases/ffmpeg-${FFMPEG_VERSION}.tar.gz --quiet && \
+  tar zxf ffmpeg-${FFMPEG_VERSION}.tar.gz && rm ffmpeg-${FFMPEG_VERSION}.tar.gz
+
+# Compile ffmpeg.
+RUN cd /tmp/ffmpeg-${FFMPEG_VERSION} && \
+  ./configure \
+  --prefix=${FFMPEG_BASEDIR} \
+  --enable-version3 \
+  --enable-avfilter \
+  --enable-avresample \
+  --enable-gpl \
+  --enable-nonfree \
+  --enable-small \
+  --enable-libmp3lame \
+  --enable-libx264 \
+  --enable-libx265 \
+  --enable-libvpx \
+  --enable-libtheora \
+  --enable-libvorbis \
+  --enable-libsoxr \
+  --enable-libspeex \
+  --enable-libtheora \
+  --enable-libvorbis \
+  --enable-libv4l2 \
+  --enable-libopus \
+  --enable-libopenjpeg \
+  --enable-libfdk-aac \
+  --enable-librtmp \
+  --enable-libass \
+  --enable-libwebp \
+  --enable-libfreetype \
+  --enable-openssl \
+  --enable-postproc \
+  --enable-pthreads \
+  --enable-shared \
+  --disable-debug \
+  --disable-static \
+  --disable-stripping \
+  --disable-doc \
+  --disable-ffplay \
+  --extra-libs="-lpthread -lm" && \
+  make && make install && make distclean
+
+# Get nginx source.
+RUN cd /tmp && \
+  wget "https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz" --quiet && \
+  tar zxf nginx-${NGINX_VERSION}.tar.gz && \
+  rm nginx-${NGINX_VERSION}.tar.gz
+
+# Get nginx-rtmp module.
+RUN cd /tmp && \
+  wget "https://github.com/sergey-dryabzhinsky/nginx-rtmp-module/archive/${NGINX_RTMP_VERSION}.tar.gz" -O "nginx-rtmp-module.tar.gz" --quiet && \
+  tar zxf nginx-rtmp-module.tar.gz && rm nginx-rtmp-module.tar.gz
+
+RUN cd /tmp && \
+  wget "https://github.com/slact/nchan/archive/v${NGINX_NCHAN_VERSION}.tar.gz" --quiet && \
+  tar zxf v${NGINX_NCHAN_VERSION}.tar.gz && rm v${NGINX_NCHAN_VERSION}.tar.gz
+
+RUN cd /tmp && \
+  wget "https://github.com/kaltura/nginx-vod-module/archive/${NGINX_VOD_VERSION}.tar.gz" --quiet && \
+  tar zxf ${NGINX_VOD_VERSION}.tar.gz && rm ${NGINX_VOD_VERSION}.tar.gz
+
+RUN cd /tmp && \
+  wget "https://github.com/yaoweibin/ngx_http_substitutions_filter_module/archive/v${NGINX_SUBSTITUTIONS_VERSION}.tar.gz" --quiet && \
+  tar zxf v${NGINX_SUBSTITUTIONS_VERSION}.tar.gz && rm v${NGINX_SUBSTITUTIONS_VERSION}.tar.gz
+
+RUN cd /tmp && \
+  wget "https://github.com/vision5/ngx_devel_kit/archive/v${NGINX_DEVEL_KIT_VERSION}.tar.gz" --quiet && \
+  tar zxf v${NGINX_DEVEL_KIT_VERSION}.tar.gz && rm v${NGINX_DEVEL_KIT_VERSION}.tar.gz
+
+RUN cd /tmp && \
+  wget "https://github.com/openresty/set-misc-nginx-module/archive/v${NGINX_SET_MISC_VERSION}.tar.gz" --quiet && \
+  tar zxf v${NGINX_SET_MISC_VERSION}.tar.gz && rm v${NGINX_SET_MISC_VERSION}.tar.gz
+
+# Compile nginx with nginx-rtmp module.
+RUN cd /tmp/nginx-${NGINX_VERSION} && \
+  ./configure \
+  --prefix=/usr/local/nginx \
+  --add-module=/tmp/nginx-rtmp-module-${NGINX_RTMP_VERSION} \
+  --add-module=/tmp/nchan-${NGINX_NCHAN_VERSION} \
+  --add-module=/tmp/nginx-vod-module-${NGINX_VOD_VERSION} \
+  --add-module=/tmp/ngx_http_substitutions_filter_module-${NGINX_SUBSTITUTIONS_VERSION} \
+  --add-module=/tmp/ngx_devel_kit-${NGINX_DEVEL_KIT_VERSION} \
+  --add-module=/tmp/set-misc-nginx-module-${NGINX_SET_MISC_VERSION} \
+  --conf-path=/etc/nginx/nginx.conf \
+  --with-threads \
+  --with-file-aio \
+  --with-http_ssl_module \
+  --with-debug \
+  --with-ipv6 \
+  --with-http_v2_module \
+  --with-http_realip_module \
+  --with-http_addition_module \
+  --with-http_xslt_module \
+  --with-http_image_filter_module \
+  --with-http_geoip_module \
+  --with-http_sub_module \
+  --with-http_dav_module \
+  --with-http_flv_module \
+  --with-http_mp4_module \
+  --with-http_gunzip_module \
+  --with-http_gzip_static_module \
+  --with-http_random_index_module \
+  --with-http_secure_link_module \
+  --with-http_degradation_module \
+  --with-http_slice_module \
+  --with-http_stub_status_module \
+  --with-http_perl_module \
+  --with-http_auth_request_module \
+  --with-mail=dynamic \
+  --with-mail_ssl_module \
+  --with-pcre \
+  --with-pcre-jit \
+  --with-stream \
+  --with-stream_ssl_module \
+  --with-cc-opt="-Wimplicit-fallthrough=0 $(pcre-config --cflags)" \
+  --with-ld-opt="-Wl,-E" && \
+  cd /tmp/nginx-${NGINX_VERSION} && make && make install
+
+# Cleanup.
+RUN rm -rf /var/cache/* /tmp/*
+
+# SEE: https://github.com/alfg/docker-nginx-rtmp/blob/master/Dockerfile
+FROM alpine:3 as nginx-boltstream
+
+# Set default ports.
+ENV HTTP_PORT 80
+ENV HTTPS_PORT 443
+ENV RTMP_PORT 1935
+
+RUN apk add --update --no-cache \
+	ca-certificates \
+	gettext \
+	openssl \
+	pcre \
+	curl \
+	gd \
+ 	geoip \
+	openjpeg \
+	lame \
+	libass \
+	libogg \
+	libvpx \
+	libvorbis \
+	libwebp \
+	libtheora \
+	libxslt \
+	opus \
+	perl \
+	rtmpdump \
+	soxr \
+	speex \
+	x264-dev \
+	x265-dev \
+	zlib
+
+COPY --from=build /usr/local/nginx /usr/local/nginx
+COPY --from=build /etc/nginx /etc/nginx
+COPY --from=build /usr/local /usr/local
+COPY --from=build /usr/lib/libfdk-aac.so.2 /usr/lib/libfdk-aac.so.2
+
+# Add NGINX path, config and static files.
+ENV PATH "${PATH}:/usr/local/nginx/sbin"
+RUN mkdir -p /opt/data && mkdir -p /www/static
+
+EXPOSE 1935
+EXPOSE 80
+
+CMD envsubst "$(env | sed -e 's/=.*//' -e 's/^/\$/g')" < /etc/nginx/nginx.conf.template \
+    > /etc/nginx/nginx.conf && \
+    echo "Running..." && \
+    exec nginx -g 'daemon off;'
