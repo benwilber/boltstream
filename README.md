@@ -5,7 +5,7 @@ Reference website: [https://boltstream.me](https://boltstream.me)
 
 This is the result of a series of blog posts that I made [here](https://benwilber.github.io/nginx/rtmp/live/video/streaming/2018/03/25/building-a-live-video-streaming-website-part-1-start-streaming.html)
 
-Join us on Freenode!  [#boltstream](https://kiwiirc.com/nextclient/irc.freenode.net/#boltstream)
+Join us on Libera.Chat!  [#boltstream](https://web.libera.chat/#boltstream)
 
 ## Features
 
